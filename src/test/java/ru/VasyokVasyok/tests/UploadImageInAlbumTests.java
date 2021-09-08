@@ -2,6 +2,11 @@ package ru.VasyokVasyok.tests;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import ru.VasyokVasyok.base.Images;
+
+import java.awt.*;
 import java.io.File;
 
 import static io.restassured.RestAssured.given;
@@ -38,61 +43,16 @@ public class UploadImageInAlbumTests extends BaseTest {
                 .get("data.deletehash");
     }
 
-    @Test
-        //Добавление картинки jpeg в новый альбом
-    void uploadImageJPEGInAlbum() {
+    @ParameterizedTest
+    @EnumSource(value = Images.class, names = {"IMAGE_JPEG, IMAGE_PNG, IMAGE_URL, IMAGE_TIFF"})
+    void uploadingImageDifferentFormatsInAlbumTest(Images image) {
         given()
-                .multiPart("image", new File(IMAGE_JPEG.getPath()))
+                .multiPart("image", image.getPath())
                 .multiPart("album", albumDeleteHash)
                 .expect()
-                .body("data.width", CoreMatchers.equalTo(900))
-                .body("data.height", CoreMatchers.equalTo(520))
-                .body("data.type", CoreMatchers.equalTo("image/jpeg"))
-                .when()
-                .post("/image")
-                .prettyPeek();
-    }
-
-    @Test
-        //Добавление картинки png в новый альбом
-    void uploadImagePNGInAlbum() {
-        given()
-                .multiPart("image", new File(IMAGE_PNG.getPath()))
-                .multiPart("album", albumDeleteHash)
-                .expect()
-                .body("data.width", CoreMatchers.equalTo(512))
-                .body("data.height", CoreMatchers.equalTo(512))
-                .body("data.type", CoreMatchers.equalTo("image/png"))
-                .when()
-                .post("/image")
-                .prettyPeek();
-    }
-
-    @Test
-        //Добавление картинки tiff в новый альбом
-    void uploadImageTIFFInAlbum() {
-        given()
-                .multiPart("image", new File(IMAGE_TIFF.getPath()))
-                .multiPart("album", albumDeleteHash)
-                .expect()
-                .body("data.width", CoreMatchers.equalTo(800))
-                .body("data.height", CoreMatchers.equalTo(800))
-                .body("data.type", CoreMatchers.equalTo("image/tiff"))
-                .when()
-                .post("/image")
-                .prettyPeek();
-    }
-
-    @Test
-        //Добавление картинки url в новый альбом
-    void uploadImageURLInAlbum() {
-        given()
-                .multiPart("image", IMAGE_URL.getPath())
-                .multiPart("album", albumDeleteHash)
-                .expect()
-                .body("data.width", CoreMatchers.equalTo(512))
-                .body("data.height", CoreMatchers.equalTo(512))
-                .body("data.type", CoreMatchers.equalTo("image/png"))
+                .body("data.width", CoreMatchers.equalTo(image.getWidth()))
+                .body("data.height", CoreMatchers.equalTo(image.getHeight()))
+                .body("data.type", CoreMatchers.equalTo(image.getType()))
                 .when()
                 .post("/image")
                 .prettyPeek();

@@ -1,6 +1,11 @@
 package ru.VasyokVasyok.tests;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import ru.VasyokVasyok.base.Images;
+import ru.VasyokVasyok.base.Videos;
 
 import java.io.File;
 
@@ -11,21 +16,12 @@ import static ru.VasyokVasyok.base.Videos.VIDEO_MPEG;
 public class UploadVideoTests extends BaseTest {
     String videoDeleteHash;
 
-    @Test
-    void uploadImageFileVideoMP4Test() {
+    //Добавление видео разных форматов
+    @ParameterizedTest
+    @EnumSource(Videos.class)
+    void uploadVideoFileDifferentFormatTest(Videos video) {
         videoDeleteHash = given()
-                .multiPart("video", new File(VIDEO_MP4.getPath()))
-                .when()
-                .post("/image")
-                .prettyPeek()
-                .jsonPath()
-                .get("data.deletehash");
-    }
-
-    @Test
-    void uploadImageFileVideoMEGTest() {
-        videoDeleteHash = given()
-                .multiPart("video", new File(VIDEO_MPEG.getPath()))
+                .multiPart("video", video.getPath())
                 .when()
                 .post("/image")
                 .prettyPeek()

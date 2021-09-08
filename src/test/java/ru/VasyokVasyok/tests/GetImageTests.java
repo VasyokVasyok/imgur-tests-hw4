@@ -1,5 +1,8 @@
 package ru.VasyokVasyok.tests;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import ru.VasyokVasyok.base.Images;
 
 import java.io.File;
 
@@ -18,27 +21,13 @@ public class GetImageTests extends BaseTest {
         return imageHash;
     }
 
-    @Test
-    //Запрос картинки jpeg.
-    void getExistingImageJPEG() {
-       given()
-                .when()
-                .get("image/{imageHash}", imageHash = createImage(IMAGE_JPEG.getPath()));
-    }
-
-    @Test
-    //Запрос картинки png.
-    void getExistingImagePNG() {
+    //Запрос картинок разных форматов
+    @ParameterizedTest
+    @EnumSource(value = Images.class, names = {"IMAGE_JPEG", "IMAGE_PNG", "IMAGE_GIF"})
+    void getExistingImageDifferentTypes(Images image) {
         given()
                 .when()
-                .get("image/{imageHash}", imageHash = createImage(IMAGE_PNG.getPath()));
+                .get("image/{imageHash}", imageHash = createImage(image.getPath()));
     }
 
-    @Test
-    //Запрос картинки Gif.
-    void getExistingImageGif() {
-        given()
-                .when()
-                .get("image/{imageHash}", imageHash = createImage(IMAGE_GIF.getPath()));
-    }
 }
